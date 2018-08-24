@@ -1,0 +1,5 @@
+/Log/
+.idea
+.env
+composer.lock
+easyswoole.install
