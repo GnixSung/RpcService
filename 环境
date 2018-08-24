@@ -3,6 +3,7 @@
     pecl install swoole
     pecl install Redis
     php7.2
+    hredis
 
 包：
     ENV、MYSQLIDB
