@@ -10,7 +10,7 @@
     ],
     "require": {
         "php": ">=7.1.0",
-        "gnixsung/easyswoole": "v1.0",
+        "gnixsung/sungswoole": "v1.0",
         "easyswoole/swoole-ide-helper": "^1.0"
     },
     "require-dev": {
