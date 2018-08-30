@@ -11,17 +11,14 @@ use App\Model\Db\TeamInfo as TeamInfoDb;
 use App\Model\Kv\TeamInfo as TeamInfoKv;
 use EasySwoole\Core\Component\Rpc\Common\Status;
 
-class Team extends Base {
+class Team extends Base{
 
+    /**
+     * 获取战队信息
+     */
     public function getTeamInfo()
     {
         $teamID = $this->getArg('team_id');
-        if(!$teamID)
-        {
-            $this->response()->setStatus(Status::SERVICE_REJECT_REQUEST);
-            $this->response()->setResult('缺少参数');
-            return false;
-        }
 
         $teamInfoModelKv = new TeamInfoKv();
 
@@ -48,6 +45,67 @@ class Team extends Base {
             }
         }
 
-        $this->response()->setResult($teamInfo);
+        $this->successResponse($teamInfo);
     }
+
+    /**
+     * 更新战队信息缓存
+     */
+    public function updateTeamInfoInCacheForTeamID()
+    {
+        $teamID = $this->getArg('team_id');
+
+        $teamInfoModelDb = new TeamInfoDb();
+
+        $teamInfo = $teamInfoModelDb->getTeamInfo($teamID);
+
+        if($teamInfo)
+        {
+            $teamInfoModelKv = new TeamInfoKv();
+
+            if(!$teamInfoModelKv->saveTeamInfoToCache($teamID,$teamInfo))
+            {
+                $this->errorResponse(Status::SERVICE_ERROR,'更新队伍缓存数据失败');
+            }
+            else
+            {
+                $this->successResponse();
+            }
+
+        }
+
+        $this->errorResponse(Status::SERVICE_REJECT_REQUEST,'战队不存在');
+    }
+
+    /**
+     * 添加一条战队ID记录
+     */
+    public function addTeamID()
+    {
+
+        $teamID = $this->getArg('team_id');
+
+        $teamInfoModelDb = new TeamInfoDb();
+
+        $teamIsExist = $teamInfoModelDb->getTeamInfo($teamID);
+
+        if(!$teamIsExist)
+        {
+            if(!$teamInfoModelDb->insertTeamID($teamID))
+            {
+                $this->errorResponse(Status::SERVICE_ERROR,'添加失败');
+            }
+            else
+            {
+                //加入更新队列
+                $teamInfoModelKv = new TeamInfoKv();
+                $teamInfoModelKv->delTeamIDInUpdateQueue($teamID);
+                $teamInfoModelKv->insertTeamIDInQueue($teamID);
+                $this->successResponse();
+            }
+        }
+        //战队ID已存在
+        $this->errorResponse(Status::SERVICE_REJECT_REQUEST,'战队ID已存在');
+    }
+
 }

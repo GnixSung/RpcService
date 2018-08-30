@@ -51,6 +51,7 @@ class RegisterRpc{
                 if($controller){
                     try{
                         (new $controller($client,$caller,$response));
+                        $isResponse = 0;
                     }catch (\Throwable $throwable){
                         Trigger::throwable($throwable);
                         $response->setStatus(Status::SERVICE_ERROR);
@@ -64,12 +65,14 @@ class RegisterRpc{
         }else{
             $response->setStatus(Status::PACKAGE_ENCRYPT_DECODED_ERROR);
         }
-//        $response = json_encode($response->toArray(),JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE);
-        $response = json_encode(['status'=>$response->getStatus(),'data'=>$response->getResult()],JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE);
+
+            //        $response = json_encode($response->toArray(),JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE);
+            $response = json_encode(['status'=>$response->getStatus(),'data'=>$response->getResult()],JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE);
 //        if($openssl){
 //            $response =  $openssl->encrypt($response);
 //        }
-        Response::response($client,Parser::pack($response));
+            Response::response($client,Parser::pack($response));
+
     }
 
 

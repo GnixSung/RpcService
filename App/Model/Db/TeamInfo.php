@@ -10,8 +10,6 @@ namespace App\Model\Db;
 
 
 
-use EasySwoole\Core\AbstractInterface\Singleton;
-
 class TeamInfo extends Base{
 
     protected $_db;
@@ -21,11 +19,20 @@ class TeamInfo extends Base{
 
     private $_resultField = ['team_id','name','tag','rank','division','custom_logo','logo','country_code'];
 
-    public function getTeamInfo($teamID)
+    public function getTeamInfo($teamID,array $fields = [])
     {
-        $teamInfoArr = $this->_db->where('team_id',$teamID,'=')->get($this->_tbName,1,$this->_resultField);
+        $fields = empty($fields)?$this->_resultField:$fields;
+        $teamInfoArr = $this->_db->where('team_id',$teamID,'=')->getOne($this->_tbName,$fields);
         return $teamInfoArr;
     }
+
+    public function insertTeamID($teamID)
+    {
+        $data = ['team_id'=>$teamID,'update_time'=>0];
+        $ret  = $this->_db->insert($this->_tbName,$data);
+        return $ret;
+    }
+
 
 
 
