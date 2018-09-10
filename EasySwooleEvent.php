@@ -27,7 +27,9 @@ Class EasySwooleEvent implements EventInterface {
         //加载evn文件
         (new \Dotenv\Dotenv(EASYSWOOLE_ROOT,'.env'))->load();
         //加载项目配置文件
-        self::loadConf(EASYSWOOLE_ROOT . '/Config');
+        self::loadConf(EASYSWOOLE_ROOT . '/App/Config');
+        //加载公共函数
+        require_once EASYSWOOLE_ROOT.'/App/common.php';
     }
 
     public static function mainServerCreate(ServerManager $server,EventRegister $register): void

@@ -1,5 +1,9 @@
 /Log/
+/Temp/
 .idea
 .env
+.env_dev
+.env_pro
+/Vendor/
 composer.lock
 easyswoole.install
